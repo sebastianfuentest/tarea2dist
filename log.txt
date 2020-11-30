@@ -1,0 +1,5 @@
+Frankenstein-Mary_Shelley.pdf parte0 esta el nodo 1
+Frankenstein-Mary_Shelley.pdf parte1 esta el nodo 0
+Frankenstein-Mary_Shelley.pdf parte2 esta el nodo 1
+Frankenstein-Mary_Shelley.pdf parte3 esta el nodo 0
+do0

@@ -1,0 +1,46 @@
+syntax = "proto3";
+package chat;
+
+message Message{
+    string body=1;
+    int32 confirmacion=2;
+}
+
+message BookInf{
+    uint64 partes =1;
+    string nombre =2;
+    repeated int32 orden=3;
+}
+
+message Propuesta{
+    string nombrelibro=1;
+    int32 cnod1=2;
+    int32 cnod2=3;
+    int32 cnod3=4;
+    repeated int32 lnod1=5;
+    repeated int32 lnod2=6;
+    repeated int32 lnod3=7;
+    repeated int32 lnodt=8;
+
+}
+
+message  BookChunk{
+    bytes    data=1;
+    int32   pieza=2;
+
+}
+
+message ListaChunks{
+    repeated BookChunk lista=1;
+    string  libro=2;
+    
+
+}
+
+service ChatService{
+    rpc SubirLibro (ListaChunks) returns (Message){}
+    //rpc BuscarLibro(BookC) returns (Message);
+    rpc Proponer (Propuesta) returns (Message){}
+   // rpc Repartir (Propuesta) returns (Message){}
+
+}
