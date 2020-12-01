@@ -165,7 +165,7 @@ func DeChunkear(Libro string, ctot uint64) {
 func main() {
 	rand.Seed(time.Now().Unix())
 	var conn1 *grpc.ClientConn
-	conn1, err1 := grpc.Dial(":9001", grpc.WithInsecure())
+	conn1, err1 := grpc.Dial("dist50:9001", grpc.WithInsecure())
 
 	if err1 != nil {
 		log.Fatalf("Could not connect: %s", err1)

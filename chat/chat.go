@@ -124,15 +124,15 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 	}
 	defer connN.Close()
 	cn := NewChatServiceClient(connN)
-	for {
-		var prop = crearPropuesta(&aux2)
-		aux1, _ := cn.Proponer(context.Background(), prop)
-		if aux1.Confirmacion == 1 {
-			fmt.Println("sali del loop de propuesta")
-			break
-		}
-		fmt.Println("falle en crear una propuesta, reintentando ...")
+
+	var prop = crearPropuesta(&aux2)
+	aux1, _ := cn.Proponer(context.Background(), prop)
+	if aux1.Confirmacion == 1 {
+		fmt.Println("sali del loop de propuesta")
+
 	}
+	fmt.Println("falle en crear una propuesta, reintentando ...")
+
 	ret := Message{
 		Body: "guardado mi rey",
 	}
@@ -142,15 +142,15 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 //Proponer is
 func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Message, error) {
 	//revvisar datanode1
+	var on1, on2, on3 = true, true, true
 	if message.Cnod1 > 0 {
 		var conn1 *grpc.ClientConn
 		conn1, err1 := grpc.Dial(":9001", grpc.WithInsecure())
 		if err1 != nil {
-			log.Fatalf("Could not connect: %s", err1)
-			ret := Message{Body: "ta malo larva 1", Confirmacion: 0}
-			return &ret, nil
+			on1 = false
+		} else {
+			defer conn1.Close()
 		}
-		defer conn1.Close()
 
 	}
 	//revisar datanode2
@@ -158,24 +158,23 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Message, er
 		var conn2 *grpc.ClientConn
 		conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
 		if err2 != nil {
-			log.Fatalf("Could not connect: %s", err2)
-			ret := Message{Body: "ta malo larva 2"}
-			return &ret, nil
+			on2 = false
+		} else {
+			defer conn2.Close()
 		}
-		defer conn2.Close()
-
 	}
 	//revisar datanode3
 	if message.Cnod3 > 0 {
 		var conn3 *grpc.ClientConn
 		conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
 		if err3 != nil {
-			log.Fatalf("Could not connect: %s", err3)
-			ret := Message{Body: "ta malo larva 3"}
-			return &ret, nil
+			on3 = false
+		} else {
+			defer conn3.Close()
 		}
-		defer conn3.Close()
-
+	}
+	if (message.Cnod1 > 0 && !on1) || (message.Cnod2 > 0 && !on2) || (message.Cnod3 > 0 && !on3) {
+		//for que hace la prop con los nodos que tienen on = true
 	}
 	ret := Message{Body: "ta bien larva procede/do a guardarlo", Confirmacion: 1}
 	if logflag == false {
