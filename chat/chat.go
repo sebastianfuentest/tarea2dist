@@ -3,6 +3,7 @@ package chat
 import (
 	context "context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -29,6 +30,39 @@ type Chunk struct {
 var path = "log.txt"
 var listaChunks []Chunk
 var logflag = false
+
+func guardarChunk(chu *BookChunk, libro string) {
+	newFileName := libro + "_" + strconv.Itoa(int(chu.GetPieza()))
+	//var fileSize int64
+	const fileChunk = 256000
+	//fileSize = chu.GetTam()
+	//partSize := int(math.Min(fileChunk, float64(fileSize-int64(fileChunk))))
+	_, err := os.Create(newFileName)
+	if err != nil {
+		fmt.Println("no se pudo hacer el archivo " + newFileName)
+	}
+	ioutil.WriteFile(newFileName, chu.Data, os.ModeAppend)
+}
+
+//MandarAGuardar is funcion que guarda los chunks en memoria
+func (s *Server) MandarAGuardar(ctx context.Context, chu *BookChunk) (*Message, error) {
+	newFileName := chu.GetLibro() + "_" + strconv.Itoa(int(chu.GetPieza()))
+	//var fileSize int64
+	const fileChunk = 256000
+	//fileSize = chu.GetTam()
+	//partSize := int(math.Min(fileChunk, float64(fileSize-int64(fileChunk))))
+	_, err := os.Create(newFileName)
+	if err != nil {
+		fmt.Println("no se pudo hacer el archivo " + newFileName)
+	}
+	ioutil.WriteFile(newFileName, chu.Data, os.ModeAppend)
+
+	ret := Message{
+		Body:         "lo guardamos rey",
+		Confirmacion: int32(1),
+	}
+	return &ret, nil
+}
 
 func crearPropuesta(lista *ListaChunks) *Propuesta {
 	rand.Seed(time.Now().Unix())
@@ -126,12 +160,7 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 	cn := NewChatServiceClient(connN)
 
 	var prop = crearPropuesta(&aux2)
-	aux1, _ := cn.Proponer(context.Background(), prop)
-	if aux1.Confirmacion == 1 {
-		fmt.Println("sali del loop de propuesta")
-
-	}
-	fmt.Println("falle en crear una propuesta, reintentando ...")
+	cn.Proponer(context.Background(), prop)
 
 	ret := Message{
 		Body: "guardado mi rey",
@@ -140,7 +169,7 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 }
 
 //Proponer is
-func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Message, error) {
+func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Propuesta, error) {
 	//revvisar datanode1
 	var on1, on2, on3 = true, true, true
 	if message.Cnod1 > 0 {
@@ -173,10 +202,39 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Message, er
 			defer conn3.Close()
 		}
 	}
+	rand.Seed(time.Now().Unix())
+
+	var dn1, dn2, dn3, dnt = []int32{}, []int32{}, []int32{}, []int32{}
+
 	if (message.Cnod1 > 0 && !on1) || (message.Cnod2 > 0 && !on2) || (message.Cnod3 > 0 && !on3) {
 		//for que hace la prop con los nodos que tienen on = true
+		for i := 0; i < len(message.Lnodt); i++ {
+			n := rand.Int() % 3
+			fmt.Println(n)
+			// este switch igual debiera revisar si el nodo que se elige esta bueno o no pero no lo hecho todavia
+			switch n {
+			case 0:
+				dn1 = append(dn1, int32(i))
+				dnt = append(dnt, int32(n))
+			case 1:
+				dn2 = append(dn2, int32(i))
+				dnt = append(dnt, int32(n))
+			case 2:
+				dn3 = append(dn3, int32(i))
+				dnt = append(dnt, int32(n))
+			}
+		}
 	}
-	ret := Message{Body: "ta bien larva procede/do a guardarlo", Confirmacion: 1}
+	ret := Propuesta{
+		Nombrelibro: message.GetNombrelibro(),
+		Cnod1:       int32(len(dn1)),
+		Cnod2:       int32(len(dn2)),
+		Cnod3:       int32(len(dn3)),
+		Lnod1:       dn1,
+		Lnod2:       dn2,
+		Lnod3:       dn3,
+		Lnodt:       dnt,
+	}
 	if logflag == false {
 		createFile()
 	}
@@ -185,25 +243,12 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Message, er
 
 }
 
-/*
-//Repartir is
-func (s *Server) Repartir(ctx context.Context, message *Propuesta) (*Message, error) {
-	var dn1, dn2, dn3 = false, false, false
+//Repartir is funcion que siempre es llamada por el datanode0
+func (s *Server) Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
+	var dn2, dn3 ChatServiceClient
 
 	//revisar datanode1
-	if message.Cnod1 > 0 {
-		var conn1 *grpc.ClientConn
-		conn1, err1 := grpc.Dial(":9001", grpc.WithInsecure())
-		if err1 != nil {
-			log.Fatalf("Could not connect: %s", err1)
-			ret := Message{Body: "ta malo larva 1", Confirmacion: 0}
-			return &ret, nil
-		}
-		defer conn1.Close()
-		dn1 = true
-	}
-	//revisar datanode2
-	if message.Cnod2 > 0 {
+	if message.Prop.Cnod2 > 0 {
 		var conn2 *grpc.ClientConn
 		conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
 		if err2 != nil {
@@ -212,10 +257,10 @@ func (s *Server) Repartir(ctx context.Context, message *Propuesta) (*Message, er
 			return &ret, nil
 		}
 		defer conn2.Close()
-		dn2 = true
+		dn2 = NewChatServiceClient(conn2)
 	}
-	//revisar datanode3
-	if message.Cnod3 > 0 {
+	//revisar datanode2
+	if message.Prop.Cnod3 > 0 {
 		var conn3 *grpc.ClientConn
 		conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
 		if err3 != nil {
@@ -224,7 +269,23 @@ func (s *Server) Repartir(ctx context.Context, message *Propuesta) (*Message, er
 			return &ret, nil
 		}
 		defer conn3.Close()
-		dn3 = true
+		dn3 = NewChatServiceClient(conn3)
 	}
 
-}*/
+	for i := 0; i < len(message.Prop.GetLnodt()); i++ {
+		switch message.Prop.GetLnodt()[i] {
+		case 0:
+			guardarChunk(message.Lista.Lista[i], message.Prop.GetNombrelibro())
+		case 1:
+			dn2.MandarAGuardar(context.Background(), message.Lista.Lista[i])
+		case 2:
+			dn3.MandarAGuardar(context.Background(), message.Lista.Lista[i])
+		}
+	}
+	ret := Message{
+		Body:         "lo logramos ivan",
+		Confirmacion: 1,
+	}
+	return &ret, nil
+
+}

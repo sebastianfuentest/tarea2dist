@@ -257,6 +257,8 @@ type BookChunk struct {
 
 	Data  []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	Pieza int32  `protobuf:"varint,2,opt,name=pieza,proto3" json:"pieza,omitempty"`
+	Tam   int64  `protobuf:"varint,3,opt,name=tam,proto3" json:"tam,omitempty"`
+	Libro string `protobuf:"bytes,4,opt,name=libro,proto3" json:"libro,omitempty"`
 }
 
 func (x *BookChunk) Reset() {
@@ -303,6 +305,20 @@ func (x *BookChunk) GetPieza() int32 {
 		return x.Pieza
 	}
 	return 0
+}
+
+func (x *BookChunk) GetTam() int64 {
+	if x != nil {
+		return x.Tam
+	}
+	return 0
+}
+
+func (x *BookChunk) GetLibro() string {
+	if x != nil {
+		return x.Libro
+	}
+	return ""
 }
 
 type ListaChunks struct {
@@ -360,6 +376,61 @@ func (x *ListaChunks) GetLibro() string {
 	return ""
 }
 
+type ListaPropuesta struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Prop  *Propuesta   `protobuf:"bytes,1,opt,name=prop,proto3" json:"prop,omitempty"`
+	Lista *ListaChunks `protobuf:"bytes,2,opt,name=lista,proto3" json:"lista,omitempty"`
+}
+
+func (x *ListaPropuesta) Reset() {
+	*x = ListaPropuesta{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_chat_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListaPropuesta) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListaPropuesta) ProtoMessage() {}
+
+func (x *ListaPropuesta) ProtoReflect() protoreflect.Message {
+	mi := &file_chat_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListaPropuesta.ProtoReflect.Descriptor instead.
+func (*ListaPropuesta) Descriptor() ([]byte, []int) {
+	return file_chat_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListaPropuesta) GetProp() *Propuesta {
+	if x != nil {
+		return x.Prop
+	}
+	return nil
+}
+
+func (x *ListaPropuesta) GetLista() *ListaChunks {
+	if x != nil {
+		return x.Lista
+	}
+	return nil
+}
+
 var File_chat_proto protoreflect.FileDescriptor
 
 var file_chat_proto_rawDesc = []byte{
@@ -386,22 +457,37 @@ var file_chat_proto_rawDesc = []byte{
 	0x6e, 0x6f, 0x64, 0x32, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6e, 0x6f, 0x64, 0x33, 0x18, 0x07, 0x20,
 	0x03, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x6e, 0x6f, 0x64, 0x33, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6e,
 	0x6f, 0x64, 0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x6e, 0x6f, 0x64, 0x74,
-	0x22, 0x35, 0x0a, 0x09, 0x42, 0x6f, 0x6f, 0x6b, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x12, 0x12, 0x0a,
+	0x22, 0x5d, 0x0a, 0x09, 0x42, 0x6f, 0x6f, 0x6b, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x12, 0x12, 0x0a,
 	0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74,
 	0x61, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x69, 0x65, 0x7a, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x05, 0x70, 0x69, 0x65, 0x7a, 0x61, 0x22, 0x4a, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x61,
-	0x43, 0x68, 0x75, 0x6e, 0x6b, 0x73, 0x12, 0x25, 0x0a, 0x05, 0x6c, 0x69, 0x73, 0x74, 0x61, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x42, 0x6f, 0x6f,
-	0x6b, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x52, 0x05, 0x6c, 0x69, 0x73, 0x74, 0x61, 0x12, 0x14, 0x0a,
-	0x05, 0x6c, 0x69, 0x62, 0x72, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x69,
-	0x62, 0x72, 0x6f, 0x32, 0x6d, 0x0a, 0x0b, 0x43, 0x68, 0x61, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x12, 0x30, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x69, 0x72, 0x4c, 0x69, 0x62, 0x72, 0x6f,
-	0x12, 0x11, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x61, 0x43, 0x68, 0x75,
-	0x6e, 0x6b, 0x73, 0x1a, 0x0d, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x22, 0x00, 0x12, 0x2c, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x6e, 0x65, 0x72,
-	0x12, 0x0f, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74,
-	0x61, 0x1a, 0x0d, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x22, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x05, 0x70, 0x69, 0x65, 0x7a, 0x61, 0x12, 0x10, 0x0a, 0x03, 0x74, 0x61, 0x6d, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x74, 0x61, 0x6d, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x62,
+	0x72, 0x6f, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x69, 0x62, 0x72, 0x6f, 0x22,
+	0x4a, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x61, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x73, 0x12, 0x25,
+	0x0a, 0x05, 0x6c, 0x69, 0x73, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e,
+	0x63, 0x68, 0x61, 0x74, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x52, 0x05,
+	0x6c, 0x69, 0x73, 0x74, 0x61, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x62, 0x72, 0x6f, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x69, 0x62, 0x72, 0x6f, 0x22, 0x5e, 0x0a, 0x0e, 0x4c,
+	0x69, 0x73, 0x74, 0x61, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74, 0x61, 0x12, 0x23, 0x0a,
+	0x04, 0x70, 0x72, 0x6f, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x63, 0x68,
+	0x61, 0x74, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74, 0x61, 0x52, 0x04, 0x70, 0x72,
+	0x6f, 0x70, 0x12, 0x27, 0x0a, 0x05, 0x6c, 0x69, 0x73, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x11, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x61, 0x43, 0x68,
+	0x75, 0x6e, 0x6b, 0x73, 0x52, 0x05, 0x6c, 0x69, 0x73, 0x74, 0x61, 0x32, 0xd6, 0x01, 0x0a, 0x0b,
+	0x43, 0x68, 0x61, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x30, 0x0a, 0x0a, 0x53,
+	0x75, 0x62, 0x69, 0x72, 0x4c, 0x69, 0x62, 0x72, 0x6f, 0x12, 0x11, 0x2e, 0x63, 0x68, 0x61, 0x74,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x61, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x73, 0x1a, 0x0d, 0x2e, 0x63,
+	0x68, 0x61, 0x74, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x12, 0x2e, 0x0a,
+	0x08, 0x50, 0x72, 0x6f, 0x70, 0x6f, 0x6e, 0x65, 0x72, 0x12, 0x0f, 0x2e, 0x63, 0x68, 0x61, 0x74,
+	0x2e, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74, 0x61, 0x1a, 0x0f, 0x2e, 0x63, 0x68, 0x61,
+	0x74, 0x2e, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74, 0x61, 0x22, 0x00, 0x12, 0x31, 0x0a,
+	0x08, 0x52, 0x65, 0x70, 0x61, 0x72, 0x74, 0x69, 0x72, 0x12, 0x14, 0x2e, 0x63, 0x68, 0x61, 0x74,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x61, 0x50, 0x72, 0x6f, 0x70, 0x75, 0x65, 0x73, 0x74, 0x61, 0x1a,
+	0x0d, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00,
+	0x12, 0x32, 0x0a, 0x0e, 0x4d, 0x61, 0x6e, 0x64, 0x61, 0x72, 0x41, 0x47, 0x75, 0x61, 0x72, 0x64,
+	0x61, 0x72, 0x12, 0x0f, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x43, 0x68,
+	0x75, 0x6e, 0x6b, 0x1a, 0x0d, 0x2e, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x22, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -416,25 +502,32 @@ func file_chat_proto_rawDescGZIP() []byte {
 	return file_chat_proto_rawDescData
 }
 
-var file_chat_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_chat_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_chat_proto_goTypes = []interface{}{
-	(*Message)(nil),     // 0: chat.Message
-	(*BookInf)(nil),     // 1: chat.BookInf
-	(*Propuesta)(nil),   // 2: chat.Propuesta
-	(*BookChunk)(nil),   // 3: chat.BookChunk
-	(*ListaChunks)(nil), // 4: chat.ListaChunks
+	(*Message)(nil),        // 0: chat.Message
+	(*BookInf)(nil),        // 1: chat.BookInf
+	(*Propuesta)(nil),      // 2: chat.Propuesta
+	(*BookChunk)(nil),      // 3: chat.BookChunk
+	(*ListaChunks)(nil),    // 4: chat.ListaChunks
+	(*ListaPropuesta)(nil), // 5: chat.ListaPropuesta
 }
 var file_chat_proto_depIdxs = []int32{
 	3, // 0: chat.ListaChunks.lista:type_name -> chat.BookChunk
-	4, // 1: chat.ChatService.SubirLibro:input_type -> chat.ListaChunks
-	2, // 2: chat.ChatService.Proponer:input_type -> chat.Propuesta
-	0, // 3: chat.ChatService.SubirLibro:output_type -> chat.Message
-	0, // 4: chat.ChatService.Proponer:output_type -> chat.Message
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 1: chat.ListaPropuesta.prop:type_name -> chat.Propuesta
+	4, // 2: chat.ListaPropuesta.lista:type_name -> chat.ListaChunks
+	4, // 3: chat.ChatService.SubirLibro:input_type -> chat.ListaChunks
+	2, // 4: chat.ChatService.Proponer:input_type -> chat.Propuesta
+	5, // 5: chat.ChatService.Repartir:input_type -> chat.ListaPropuesta
+	3, // 6: chat.ChatService.MandarAGuardar:input_type -> chat.BookChunk
+	0, // 7: chat.ChatService.SubirLibro:output_type -> chat.Message
+	2, // 8: chat.ChatService.Proponer:output_type -> chat.Propuesta
+	0, // 9: chat.ChatService.Repartir:output_type -> chat.Message
+	0, // 10: chat.ChatService.MandarAGuardar:output_type -> chat.Message
+	7, // [7:11] is the sub-list for method output_type
+	3, // [3:7] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_chat_proto_init() }
@@ -503,6 +596,18 @@ func file_chat_proto_init() {
 				return nil
 			}
 		}
+		file_chat_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListaPropuesta); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -510,7 +615,7 @@ func file_chat_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_chat_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -538,7 +643,9 @@ const _ = grpc.SupportPackageIsVersion6
 type ChatServiceClient interface {
 	SubirLibro(ctx context.Context, in *ListaChunks, opts ...grpc.CallOption) (*Message, error)
 	//rpc BuscarLibro(BookC) returns (Message);
-	Proponer(ctx context.Context, in *Propuesta, opts ...grpc.CallOption) (*Message, error)
+	Proponer(ctx context.Context, in *Propuesta, opts ...grpc.CallOption) (*Propuesta, error)
+	Repartir(ctx context.Context, in *ListaPropuesta, opts ...grpc.CallOption) (*Message, error)
+	MandarAGuardar(ctx context.Context, in *BookChunk, opts ...grpc.CallOption) (*Message, error)
 }
 
 type chatServiceClient struct {
@@ -558,9 +665,27 @@ func (c *chatServiceClient) SubirLibro(ctx context.Context, in *ListaChunks, opt
 	return out, nil
 }
 
-func (c *chatServiceClient) Proponer(ctx context.Context, in *Propuesta, opts ...grpc.CallOption) (*Message, error) {
-	out := new(Message)
+func (c *chatServiceClient) Proponer(ctx context.Context, in *Propuesta, opts ...grpc.CallOption) (*Propuesta, error) {
+	out := new(Propuesta)
 	err := c.cc.Invoke(ctx, "/chat.ChatService/Proponer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) Repartir(ctx context.Context, in *ListaPropuesta, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/Repartir", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MandarAGuardar(ctx context.Context, in *BookChunk, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/chat.ChatService/MandarAGuardar", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -571,7 +696,9 @@ func (c *chatServiceClient) Proponer(ctx context.Context, in *Propuesta, opts ..
 type ChatServiceServer interface {
 	SubirLibro(context.Context, *ListaChunks) (*Message, error)
 	//rpc BuscarLibro(BookC) returns (Message);
-	Proponer(context.Context, *Propuesta) (*Message, error)
+	Proponer(context.Context, *Propuesta) (*Propuesta, error)
+	Repartir(context.Context, *ListaPropuesta) (*Message, error)
+	MandarAGuardar(context.Context, *BookChunk) (*Message, error)
 }
 
 // UnimplementedChatServiceServer can be embedded to have forward compatible implementations.
@@ -581,8 +708,14 @@ type UnimplementedChatServiceServer struct {
 func (*UnimplementedChatServiceServer) SubirLibro(context.Context, *ListaChunks) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubirLibro not implemented")
 }
-func (*UnimplementedChatServiceServer) Proponer(context.Context, *Propuesta) (*Message, error) {
+func (*UnimplementedChatServiceServer) Proponer(context.Context, *Propuesta) (*Propuesta, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Proponer not implemented")
+}
+func (*UnimplementedChatServiceServer) Repartir(context.Context, *ListaPropuesta) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Repartir not implemented")
+}
+func (*UnimplementedChatServiceServer) MandarAGuardar(context.Context, *BookChunk) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MandarAGuardar not implemented")
 }
 
 func RegisterChatServiceServer(s *grpc.Server, srv ChatServiceServer) {
@@ -625,6 +758,42 @@ func _ChatService_Proponer_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_Repartir_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListaPropuesta)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).Repartir(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/Repartir",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).Repartir(ctx, req.(*ListaPropuesta))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MandarAGuardar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookChunk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MandarAGuardar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chat.ChatService/MandarAGuardar",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MandarAGuardar(ctx, req.(*BookChunk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ChatService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chat.ChatService",
 	HandlerType: (*ChatServiceServer)(nil),
@@ -636,6 +805,14 @@ var _ChatService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Proponer",
 			Handler:    _ChatService_Proponer_Handler,
+		},
+		{
+			MethodName: "Repartir",
+			Handler:    _ChatService_Repartir_Handler,
+		},
+		{
+			MethodName: "MandarAGuardar",
+			Handler:    _ChatService_MandarAGuardar_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

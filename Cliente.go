@@ -213,6 +213,7 @@ func main() {
 				amandar := chat.BookChunk{
 					Data:  libch[i],
 					Pieza: int32(i),
+					Libro: text,
 				}
 
 				powar.Lista = append(powar.Lista, &(amandar))

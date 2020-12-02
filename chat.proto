@@ -27,20 +27,26 @@ message Propuesta{
 message  BookChunk{
     bytes    data=1;
     int32   pieza=2;
+    int64   tam=3;
+    string libro=4;
 
 }
 
 message ListaChunks{
     repeated BookChunk lista=1;
     string  libro=2;
-    
+}
 
+message ListaPropuesta{
+    Propuesta prop=1;
+    ListaChunks lista=2;
 }
 
 service ChatService{
     rpc SubirLibro (ListaChunks) returns (Message){}
     //rpc BuscarLibro(BookC) returns (Message);
-    rpc Proponer (Propuesta) returns (Message){}
-   // rpc Repartir (Propuesta) returns (Message){}
+    rpc Proponer (Propuesta)     returns (Propuesta){}
+    rpc Repartir (ListaPropuesta)     returns (Message){}
+    rpc MandarAGuardar(BookChunk)returns (Message){}
 
 }
