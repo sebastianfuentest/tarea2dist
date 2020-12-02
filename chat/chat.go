@@ -160,8 +160,12 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 	cn := NewChatServiceClient(connN)
 
 	var prop = crearPropuesta(&aux2)
-	cn.Proponer(context.Background(), prop)
-
+	prop, _ = cn.Proponer(context.Background(), prop)
+	lisprop := ListaPropuesta{
+		Prop:  prop,
+		Lista: message,
+	}
+	Repartir(context.Background(), &lisprop)
 	ret := Message{
 		Body: "guardado mi rey",
 	}
@@ -244,7 +248,7 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Propuesta, 
 }
 
 //Repartir is funcion que siempre es llamada por el datanode0
-func (s *Server) Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
+func Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
 	var dn2, dn3 ChatServiceClient
 
 	//revisar datanode1

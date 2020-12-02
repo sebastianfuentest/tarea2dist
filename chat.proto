@@ -46,7 +46,7 @@ service ChatService{
     rpc SubirLibro (ListaChunks) returns (Message){}
     //rpc BuscarLibro(BookC) returns (Message);
     rpc Proponer (Propuesta)     returns (Propuesta){}
-    rpc Repartir (ListaPropuesta)     returns (Message){}
+    //rpc Repartir (ListaPropuesta)     returns (Message){}
     rpc MandarAGuardar(BookChunk)returns (Message){}
 
 }
