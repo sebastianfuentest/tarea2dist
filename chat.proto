@@ -5,6 +5,12 @@ message Message{
     string body=1;
     int32 confirmacion=2;
 }
+message Basura{
+    string body=1;
+}
+message LL{
+    repeated string libros=1;
+}
 
 message BookInf{
     uint64 partes =1;
@@ -45,6 +51,7 @@ message ListaPropuesta{
 service ChatService{
     rpc SubirLibro (ListaChunks) returns (Message){}
     //rpc BuscarLibro(BookC) returns (Message);
+    rpc ListarLibros(Basura) returns(LL){}
     rpc Proponer (Propuesta)     returns (Propuesta){}
     //rpc Repartir (ListaPropuesta)     returns (Message){}
     rpc MandarAGuardar(BookChunk)returns (Message){}

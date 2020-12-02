@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"bufio"
 	context "context"
 	"fmt"
 	"io/ioutil"
@@ -119,11 +120,13 @@ func createFile() {
 func writeFile(prop *Propuesta) {
 	// Open file using READ & WRITE permission.
 	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
+	var file2, _ = os.OpenFile("libros.txt", os.O_RDWR, 0644)
 	var i int32 = 0
 	var ldn = prop.Lnodt
 	if err != nil {
 		return
 	}
+	defer file2.Close()
 	defer file.Close()
 	var lacosa string
 	for i = 0; i < prop.Cnod1+prop.Cnod2+prop.Cnod3; i++ {
@@ -133,6 +136,7 @@ func writeFile(prop *Propuesta) {
 			return
 		}
 	}
+	file.WriteString(prop.Nombrelibro)
 	// Write some text line-by-line to file.
 	// Save file changes.
 	err = file.Sync()
@@ -151,7 +155,7 @@ func (s *Server) SubirLibro(ctx context.Context, message *ListaChunks) (*Message
 		Lista: message.GetLista(),
 		Libro: message.GetLibro(),
 	}
-	connN, err := grpc.Dial(":9000", grpc.WithInsecure())
+	connN, err := grpc.Dial("dist49:9000", grpc.WithInsecure())
 
 	if err != nil {
 		log.Fatalf("Could not connect: %s", err)
@@ -178,7 +182,7 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Propuesta, 
 	var on1, on2, on3 = true, true, true
 	if message.Cnod1 > 0 {
 		var conn1 *grpc.ClientConn
-		conn1, err1 := grpc.Dial(":9001", grpc.WithInsecure())
+		conn1, err1 := grpc.Dial("dist50:9001", grpc.WithInsecure())
 		if err1 != nil {
 			on1 = false
 		} else {
@@ -189,7 +193,7 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Propuesta, 
 	//revisar datanode2
 	if message.Cnod2 > 0 {
 		var conn2 *grpc.ClientConn
-		conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
+		conn2, err2 := grpc.Dial("dist51:9002", grpc.WithInsecure())
 		if err2 != nil {
 			on2 = false
 		} else {
@@ -199,7 +203,7 @@ func (s *Server) Proponer(ctx context.Context, message *Propuesta) (*Propuesta, 
 	//revisar datanode3
 	if message.Cnod3 > 0 {
 		var conn3 *grpc.ClientConn
-		conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
+		conn3, err3 := grpc.Dial("dist52:9003", grpc.WithInsecure())
 		if err3 != nil {
 			on3 = false
 		} else {
@@ -254,7 +258,7 @@ func Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
 	//revisar datanode1
 	if message.Prop.Cnod2 > 0 {
 		var conn2 *grpc.ClientConn
-		conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
+		conn2, err2 := grpc.Dial("dist51:9002", grpc.WithInsecure())
 		if err2 != nil {
 			log.Fatalf("Could not connect: %s", err2)
 			ret := Message{Body: "ta malo larva 2"}
@@ -266,7 +270,7 @@ func Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
 	//revisar datanode2
 	if message.Prop.Cnod3 > 0 {
 		var conn3 *grpc.ClientConn
-		conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
+		conn3, err3 := grpc.Dial("dist52:9003", grpc.WithInsecure())
 		if err3 != nil {
 			log.Fatalf("Could not connect: %s", err3)
 			ret := Message{Body: "ta malo larva 3"}
@@ -292,4 +296,26 @@ func Repartir(ctx context.Context, message *ListaPropuesta) (*Message, error) {
 	}
 	return &ret, nil
 
+}
+
+//ListarLibros is la funcion que usa el cliente para que namenode le de la lista de libros
+func (s *Server) ListarLibros(ctx context.Context, bas *Basura) (*LL, error) {
+	var text = []string{}
+	file, err := os.Open("libros.txt")
+	if err != nil {
+		log.Fatalf("failed to open")
+
+	}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text = append(text, scanner.Text())
+	}
+	file.Close()
+	/*for _, eachln := range text {
+		fmt.Println(eachln)
+	}*/
+	ret := LL{
+		Libros: text,
+	}
+	return &ret, nil
 }

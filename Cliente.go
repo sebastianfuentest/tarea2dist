@@ -165,32 +165,42 @@ func DeChunkear(Libro string, ctot uint64) {
 func main() {
 	rand.Seed(time.Now().Unix())
 	var conn1 *grpc.ClientConn
-	conn1, err1 := grpc.Dial(":9001", grpc.WithInsecure())
+	conn1, err1 := grpc.Dial("dist50:9001", grpc.WithInsecure())
 
 	if err1 != nil {
 		log.Fatalf("Could not connect: %s", err1)
 	}
 	defer conn1.Close()
 	c1 := chat.NewChatServiceClient(conn1)
+
+	var connN *grpc.ClientConn
+	connN, errn := grpc.Dial("dist49:9000", grpc.WithInsecure())
+
+	if errn != nil {
+		log.Fatalf("Could not connect: %s", errn)
+	}
+	defer connN.Close()
+	cn := chat.NewChatServiceClient(connN)
 	/*
-		var conn2 *grpc.ClientConn
-		conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
+		/*
+			var conn2 *grpc.ClientConn
+			conn2, err2 := grpc.Dial(":9002", grpc.WithInsecure())
 
-		if err2 != nil {
-			log.Fatalf("Could not connect: %s", err2)
-		}
-		defer conn2.Close()
+			if err2 != nil {
+				log.Fatalf("Could not connect: %s", err2)
+			}
+			defer conn2.Close()
 
-		var conn3 *grpc.ClientConn
-		conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
+			var conn3 *grpc.ClientConn
+			conn3, err3 := grpc.Dial(":9003", grpc.WithInsecure())
 
-		if err3 != nil {
-			log.Fatalf("Could not connect: %s", err3)
-		}
-		defer conn3.Close()
+			if err3 != nil {
+				log.Fatalf("Could not connect: %s", err3)
+			}
+			defer conn3.Close()
 	*/
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Ingrese una opción \n1.Subir archivo\n2.Descargar archivo\n3.Terminar el programa")
+	fmt.Println("Ingrese una opción \n1.Subir archivo\n2.Descargar archivo\n3.Pedir lista de libros\n4.Terminar el programa")
 	log.Printf("---------------------")
 	var libch = [][]byte{}
 	var i = 0
@@ -236,12 +246,21 @@ func main() {
 			//fmt.Println(powar.Lista[1])
 			DeChunkear(text, uint64(len(powar.Lista)))
 		}
-		if strings.Compare(text, "3") == 0 {
+		if strings.Compare(text, "4") == 0 {
 			fmt.Println("bye bye\n")
 			break
 		}
+		if strings.Compare(text, "3") == 0 {
+			uwu := chat.Basura{
+				Body: "UnU",
+			}
+			var LALISTA, _ = cn.ListarLibros(context.Background(), &uwu)
+			for _, eachln := range LALISTA.Libros {
+				fmt.Println(eachln)
+			}
+		}
 
-		fmt.Println("Ingrese una opción \n1.Subir archivo\n2.Descargar archivo\n3.Terminar el programa")
+		fmt.Println("Ingrese una opción \n1.Subir archivo\n2.Descargar archivo\n3.Pedir lista de libros\n4.Terminar el programa")
 		log.Printf("---------------------")
 	}
 
